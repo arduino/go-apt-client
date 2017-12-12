@@ -52,6 +52,8 @@ type Repository struct {
 	Distribution string
 	Components   string
 	Comment      string
+
+	configFile string
 }
 
 // Equals check if the Repository definition is equivalent to the
@@ -129,6 +131,7 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 		repo := parseAPTConfigLine(line)
 		//fmt.Printf("%+v\n", repo)
 		if repo != nil {
+			repo.configFile = configPath
 			res = append(res, repo)
 		}
 	}
