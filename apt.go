@@ -111,3 +111,16 @@ func UpgradeAll() (output []byte, err error) {
 	cmd := exec.Command("apt-get", "upgrade", "-y")
 	return cmd.CombinedOutput()
 }
+
+// Remove removes a set of packages
+func Remove(packs ...*Package) (output []byte, err error) {
+	args := []string{"remove", "-y"}
+	for _, pack := range packs {
+		if pack == nil || pack.Name == "" {
+			return nil, fmt.Errorf("apt.Remove: Invalid package with empty Name")
+		}
+		args = append(args, pack.Name)
+	}
+	cmd := exec.Command("apt-get", args...)
+	return cmd.CombinedOutput()
+}
