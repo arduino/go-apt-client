@@ -1,0 +1,3 @@
+deb http://it.archive.ubuntu.com/ubuntu/ zesty main restricted
+deb-src http://it.archive.ubuntu.com/ubuntu/ zesty main restricted
+

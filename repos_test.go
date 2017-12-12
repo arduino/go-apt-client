@@ -21,6 +21,7 @@ package apt
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -39,4 +40,38 @@ func TestParseAPTConfigFolder(t *testing.T) {
 	for i, repo := range repos {
 		require.EqualValues(t, expected[i], repo, "Comparing element %d", i)
 	}
+}
+
+func TestAddRepository(t *testing.T) {
+	// test cleanup
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list")
+
+	repo1 := &Repository{
+		Enabled:      true,
+		SourceRepo:   false,
+		URI:          "http://ppa.launchpad.net/webupd8team/java/ubuntu",
+		Distribution: "zesty",
+		Components:   "main",
+		Comment:      "",
+	}
+	repo2 := &Repository{
+		Enabled:      false,
+		SourceRepo:   true,
+		URI:          "http://ppa.launchpad.net/webupd8team/java/ubuntu",
+		Distribution: "zesty",
+		Components:   "main",
+		Comment:      "",
+	}
+	err := AddRepository(repo1, "testdata/apt2")
+	require.NoError(t, err, "Adding repository")
+	err = AddRepository(repo2, "testdata/apt2")
+	require.NoError(t, err, "Adding repository")
+
+	repos, err := ParseAPTConfigFolder("testdata/apt2")
+	require.NoError(t, err, "running List command")
+	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
+	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo2)
+
+	err = AddRepository(repo2, "testdata/apt2")
+	require.Error(t, err, "Adding repository again")
 }

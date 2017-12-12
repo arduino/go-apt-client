@@ -23,6 +23,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -159,4 +160,32 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 		res = append(res, repos...)
 	}
 	return res, nil
+}
+
+// AddRepository adds the specified repository to the specified APT
+// config folder (usually /etc/apt). The new repository is saved into
+// a file named "managed.list"
+func AddRepository(repo *Repository, configFolderPath string) error {
+	repos, err := ParseAPTConfigFolder(configFolderPath)
+	if err != nil {
+		return fmt.Errorf("parsing APT config: %s", err)
+	}
+	if repos.Contains(repo) {
+		return fmt.Errorf("The repository is already configured")
+	}
+
+	// Add to the "managed.list" file
+	managedPath := filepath.Join(configFolderPath, "sources.list.d", "managed.list")
+	f, err := os.OpenFile(managedPath, os.O_APPEND|os.O_WRONLY, 0644)
+	if os.IsNotExist(err) {
+		f, err = os.OpenFile(managedPath, os.O_CREATE|os.O_WRONLY, 0644)
+	}
+	if err != nil {
+		return fmt.Errorf("Opening %s: %s", managedPath, err)
+	}
+	defer f.Close()
+	if _, err = f.WriteString(repo.APTConfigLine() + "\n"); err != nil {
+		return fmt.Errorf("Writing repo data to config file %s: %s", managedPath, err)
+	}
+	return nil
 }
