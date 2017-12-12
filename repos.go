@@ -35,12 +35,18 @@ type RepositoryList []*Repository
 // Contains check if a repository definition is already contained
 // in the RepositoryList
 func (r RepositoryList) Contains(repo *Repository) bool {
-	for _, i := range r {
-		if repo.Equals(i) {
-			return true
+	return r.Find(repo) != nil
+}
+
+// Find search a repo in the RepositoryList that has metadata
+// matching with the one passed as parameter
+func (r RepositoryList) Find(repoToFind *Repository) *Repository {
+	for _, repo := range r {
+		if repoToFind.Equals(repo) {
+			return repo
 		}
 	}
-	return false
+	return nil
 }
 
 // Repository is a repository installed in the system
