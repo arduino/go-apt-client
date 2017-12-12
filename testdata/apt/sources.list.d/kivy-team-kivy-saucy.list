@@ -1,0 +1,2 @@
+# deb http://ppa.launchpad.net/kivy-team/kivy/ubuntu trusty main # disabled on upgrade to trusty
+# deb-src http://ppa.launchpad.net/kivy-team/kivy/ubuntu saucy main

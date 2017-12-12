@@ -1,0 +1,2 @@
+# deb http://ppa.launchpad.net/js-reynaud/kicad-4/ubuntu yakkety main # disabled on upgrade to yakkety
+# deb-src http://ppa.launchpad.net/js-reynaud/kicad-4/ubuntu xenial main

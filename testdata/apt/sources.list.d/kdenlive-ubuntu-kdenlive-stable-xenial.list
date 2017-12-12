@@ -1,0 +1,2 @@
+# deb http://ppa.launchpad.net/kdenlive/kdenlive-stable/ubuntu yakkety main # disabled on upgrade to yakkety
+deb-src http://ppa.launchpad.net/kdenlive/kdenlive-stable/ubuntu xenial main

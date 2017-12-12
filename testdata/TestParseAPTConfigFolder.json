@@ -1,0 +1,362 @@
+[
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-updates",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "trusty-updates",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-updates",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-updates",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-updates",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-updates",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-backports",
+    "Components": "main restricted universe multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://it.archive.ubuntu.com/ubuntu/",
+    "Distribution": "zesty-backports",
+    "Components": "main restricted universe multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "main restricted",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "universe",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://security.ubuntu.com/ubuntu",
+    "Distribution": "zesty-security",
+    "Components": "multiverse",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://archive.canonical.com/ubuntu",
+    "Distribution": "precise",
+    "Components": "partner",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://archive.canonical.com/ubuntu",
+    "Distribution": "precise",
+    "Components": "partner",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://download.ebz.epson.net/dsc/op/stable/debian/",
+    "Distribution": "lsb3.2",
+    "Components": "main",
+    "Comment": "disabled on upgrade to trusty disabled on upgrade to utopic"
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "arch=amd64",
+    "URI": "https://apt.dockerproject.org/repo",
+    "Distribution": "ubuntu-xenial",
+    "Components": "main",
+    "Comment": "disabled on upgrade to yakkety"
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "arch=amd64",
+    "URI": "http://dl.google.com/linux/chrome/deb/",
+    "Distribution": "stable",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/js-reynaud/kicad-4/ubuntu",
+    "Distribution": "yakkety",
+    "Components": "main",
+    "Comment": "disabled on upgrade to yakkety"
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/js-reynaud/kicad-4/ubuntu",
+    "Distribution": "xenial",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/kdenlive/kdenlive-stable/ubuntu",
+    "Distribution": "yakkety",
+    "Components": "main",
+    "Comment": "disabled on upgrade to yakkety"
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/kdenlive/kdenlive-stable/ubuntu",
+    "Distribution": "xenial",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/kivy-team/kivy/ubuntu",
+    "Distribution": "trusty",
+    "Components": "main",
+    "Comment": "disabled on upgrade to trusty"
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/kivy-team/kivy/ubuntu",
+    "Distribution": "saucy",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/mixxx/mixxx/ubuntu",
+    "Distribution": "yakkety",
+    "Components": "main",
+    "Comment": "disabled on upgrade to yakkety"
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/mixxx/mixxx/ubuntu",
+    "Distribution": "xenial",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "https://private-ppa.launchpad.net/commercial-ppa-uploaders/portal-slingshot/ubuntu",
+    "Distribution": "quantal",
+    "Components": "main",
+    "Comment": "Added by software-center; credentials stored in /etc/apt/auth.conf disabled on upgrade to quantal"
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://download.rethinkdb.com/apt",
+    "Distribution": "yakkety",
+    "Components": "main",
+    "Comment": "disabled on upgrade to yakkety"
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "arch=amd64",
+    "URI": "https://repo.skype.com/deb",
+    "Distribution": "stable",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://download.virtualbox.org/virtualbox/debian",
+    "Distribution": "trusty",
+    "Components": "contrib",
+    "Comment": "disabled on upgrade to trusty"
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "arch=amd64",
+    "URI": "http://packages.microsoft.com/repos/vscode",
+    "Distribution": "stable",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": true,
+    "SourceRepo": false,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/webupd8team/java/ubuntu",
+    "Distribution": "zesty",
+    "Components": "main",
+    "Comment": ""
+  },
+  {
+    "Enabled": false,
+    "SourceRepo": true,
+    "Options": "",
+    "URI": "http://ppa.launchpad.net/webupd8team/java/ubuntu",
+    "Distribution": "zesty",
+    "Components": "main",
+    "Comment": ""
+  }
+]
