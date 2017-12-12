@@ -28,6 +28,20 @@ import (
 	"strings"
 )
 
+// RepositoryList is an array of Repository definitions
+type RepositoryList []*Repository
+
+// Contains check if a repository definition is already contained
+// in the RepositoryList
+func (r RepositoryList) Contains(repo *Repository) bool {
+	for _, i := range r {
+		if repo.Equals(i) {
+			return true
+		}
+	}
+	return false
+}
+
 // Repository is a repository installed in the system
 type Repository struct {
 	Enabled      bool
@@ -37,6 +51,27 @@ type Repository struct {
 	Distribution string
 	Components   string
 	Comment      string
+}
+
+// Equals check if the Repository definition is equivalent to the
+// one provided as parameter
+func (r *Repository) Equals(repo *Repository) bool {
+	if r.Components != repo.Components {
+		return false
+	}
+	if r.Distribution != repo.Distribution {
+		return false
+	}
+	if r.URI != repo.URI {
+		return false
+	}
+	if r.SourceRepo != repo.SourceRepo {
+		return false
+	}
+	if r.Options != repo.Options {
+		return false
+	}
+	return true
 }
 
 // APTConfigLine returns the source.list config line for the Repository
@@ -80,14 +115,14 @@ func parseAPTConfigLine(line string) *Repository {
 	}
 }
 
-func parseAPTConfigFile(configPath string) ([]*Repository, error) {
+func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 	data, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("Reading %s: %s", configPath, err)
 	}
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 
-	res := []*Repository{}
+	res := RepositoryList{}
 	for scanner.Scan() {
 		line := scanner.Text()
 		repo := parseAPTConfigLine(line)
@@ -101,7 +136,7 @@ func parseAPTConfigFile(configPath string) ([]*Repository, error) {
 
 // ParseAPTConfigFolder scans an APT config folder (usually /etc/apt) to
 // get information about configured repositories
-func ParseAPTConfigFolder(folderPath string) ([]*Repository, error) {
+func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	sources := []string{filepath.Join(folderPath, "sources.list")}
 
 	sourcesFolder := filepath.Join(folderPath, "sources.list.d")
@@ -115,7 +150,7 @@ func ParseAPTConfigFolder(folderPath string) ([]*Repository, error) {
 		}
 	}
 
-	res := []*Repository{}
+	res := RepositoryList{}
 	for _, source := range sources {
 		repos, err := parseAPTConfigFile(source)
 		if err != nil {
