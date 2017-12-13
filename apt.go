@@ -124,3 +124,16 @@ func Remove(packs ...*Package) (output []byte, err error) {
 	cmd := exec.Command("apt-get", args...)
 	return cmd.CombinedOutput()
 }
+
+// Install installs a set of packages
+func Install(packs ...*Package) (output []byte, err error) {
+	args := []string{"install", "-y"}
+	for _, pack := range packs {
+		if pack == nil || pack.Name == "" {
+			return nil, fmt.Errorf("apt.Install: Invalid package with empty Name")
+		}
+		args = append(args, pack.Name)
+	}
+	cmd := exec.Command("apt-get", args...)
+	return cmd.CombinedOutput()
+}
