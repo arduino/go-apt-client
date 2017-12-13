@@ -32,14 +32,14 @@ import (
 // RepositoryList is an array of Repository definitions
 type RepositoryList []*Repository
 
-// Contains check if a repository definition is already contained
+// Contains checks if a repository definition is contained
 // in the RepositoryList
 func (r RepositoryList) Contains(repo *Repository) bool {
 	return r.Find(repo) != nil
 }
 
-// Find search a repo in the RepositoryList that has metadata
-// matching with the one passed as parameter
+// Find search in the RepositoryList a repo that has the same
+// metadata as the one passed as parameter
 func (r RepositoryList) Find(repoToFind *Repository) *Repository {
 	for _, repo := range r {
 		if repoToFind.Equals(repo) {
@@ -49,7 +49,7 @@ func (r RepositoryList) Find(repoToFind *Repository) *Repository {
 	return nil
 }
 
-// Repository is a repository installed in the system
+// Repository contains metadata about a repository installed in the system
 type Repository struct {
 	Enabled      bool
 	SourceRepo   bool
@@ -62,8 +62,9 @@ type Repository struct {
 	configFile string
 }
 
-// Equals check if the Repository definition is equivalent to the
-// one provided as parameter
+// Equals check if the Repository metadata are equivalent to the
+// one provided as parameter. Two Repository are equivalent if all
+// metadata matches with the exception of Enabled and Comment.
 func (r *Repository) Equals(repo *Repository) bool {
 	if r.Components != repo.Components {
 		return false
@@ -83,7 +84,8 @@ func (r *Repository) Equals(repo *Repository) bool {
 	return true
 }
 
-// APTConfigLine returns the source.list config line for the Repository
+// APTConfigLine returns the "deb" or "deb-src" config line to put in
+// source.list to install the Repository
 func (r *Repository) APTConfigLine() string {
 	res := ""
 	if !r.Enabled {
@@ -145,7 +147,8 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 }
 
 // ParseAPTConfigFolder scans an APT config folder (usually /etc/apt) to
-// get information about configured repositories
+// get information about all configured repositories, it scans also
+// "source.list.d" subfolder to find all the "*.list" files.
 func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	sources := []string{filepath.Join(folderPath, "sources.list")}
 
@@ -171,7 +174,7 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	return res, nil
 }
 
-// AddRepository adds the specified repository to the specified APT
+// AddRepository adds the specified repository by changing the specified APT
 // config folder (usually /etc/apt). The new repository is saved into
 // a file named "managed.list"
 func AddRepository(repo *Repository, configFolderPath string) error {
@@ -242,8 +245,8 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	return nil
 }
 
-// EditRepository replace the an old repo configuration with a new repo
-// configuration found in the specified APT config folder (usually /etc/apt).
+// EditRepository replace an old repo configuration with a new repo
+// configuration in the specified APT config folder (usually /etc/apt).
 func EditRepository(old *Repository, new *Repository, configFolderPath string) error {
 	// Read all repos configurations
 	repos, err := ParseAPTConfigFolder(configFolderPath)
