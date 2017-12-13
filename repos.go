@@ -200,6 +200,7 @@ func AddRepository(repo *Repository, configFolderPath string) error {
 }
 
 // RemoveRepository removes a repository from the repository list files
+// found in the specified APT config folder (usually /etc/apt)
 func RemoveRepository(repo *Repository, configFolderPath string) error {
 	// Read all repos configurations
 	repos, err := ParseAPTConfigFolder(configFolderPath)
