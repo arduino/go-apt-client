@@ -242,6 +242,50 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	return nil
 }
 
+// EditRepository replace the an old repo configuration with a new repo
+// configuration found in the specified APT config folder (usually /etc/apt).
+func EditRepository(old *Repository, new *Repository, configFolderPath string) error {
+	// Read all repos configurations
+	repos, err := ParseAPTConfigFolder(configFolderPath)
+	if err != nil {
+		return fmt.Errorf("parsing APT config: %s", err)
+	}
+
+	// Find the repo to edit
+	repoToEdit := repos.Find(old)
+	if repoToEdit == nil {
+		return fmt.Errorf("Repository doesn't exist")
+	}
+
+	// Read the config file that contains the repo configuration to edit
+	fileToEdit := repoToEdit.configFile
+	data, err := ioutil.ReadFile(fileToEdit)
+	if err != nil {
+		return fmt.Errorf("Reading config file %s: %s", fileToEdit, err)
+	}
+
+	// Create the new version of the file
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	newContent := ""
+	for scanner.Scan() {
+		line := scanner.Text()
+		r := parseAPTConfigLine(line)
+		if r.Equals(old) {
+			// Write the new config to replace the old one
+			newContent += new.APTConfigLine() + "\n"
+			continue
+		}
+		newContent += line + "\n"
+	}
+
+	err = replaceFile(fileToEdit, []byte(newContent))
+	if err != nil {
+		return fmt.Errorf("Writing of new config: %s", err)
+	}
+
+	return nil
+}
+
 func replaceFile(path string, newContent []byte) error {
 	newPath := path + ".new"
 	backupPath := path + ".save"
