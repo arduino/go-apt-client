@@ -42,7 +42,7 @@ func TestParseAPTConfigFolder(t *testing.T) {
 	}
 }
 
-func TestAddRepository(t *testing.T) {
+func TestAddAndRemoveRepository(t *testing.T) {
 	// test cleanup
 	defer os.Remove("testdata/apt2/sources.list.d/managed.list")
 
@@ -74,4 +74,15 @@ func TestAddRepository(t *testing.T) {
 
 	err = AddRepository(repo2, "testdata/apt2")
 	require.Error(t, err, "Adding repository again")
+
+	err = RemoveRepository(repo2, "testdata/apt2")
+	require.NoError(t, err, "Removing repository")
+
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
+	require.NoError(t, err, "running List command")
+	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
+	require.False(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
+
+	err = RemoveRepository(repo2, "testdata/apt2")
+	require.Error(t, err, "Removing repository again")
 }

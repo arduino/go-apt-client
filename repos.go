@@ -198,3 +198,60 @@ func AddRepository(repo *Repository, configFolderPath string) error {
 	}
 	return nil
 }
+
+// RemoveRepository removes a repository from the repository list files
+func RemoveRepository(repo *Repository, configFolderPath string) error {
+	// Read all repos configurations
+	repos, err := ParseAPTConfigFolder(configFolderPath)
+	if err != nil {
+		return fmt.Errorf("parsing APT config: %s", err)
+	}
+
+	// Find the repo to remove
+	repoToRemove := repos.Find(repo)
+	if repoToRemove == nil {
+		return fmt.Errorf("Repository already removed")
+	}
+
+	// Read the config file that contains the repo config to remove
+	fileToFilter := repoToRemove.configFile
+	data, err := ioutil.ReadFile(fileToFilter)
+	if err != nil {
+		return fmt.Errorf("Reading config file %s: %s", fileToFilter, err)
+	}
+
+	// Create the new version of the file
+	f, err := os.OpenFile(fileToFilter+".new", os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return fmt.Errorf("Writing of new config %s: %s", fileToFilter+".new", err)
+	}
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	for scanner.Scan() {
+		line := scanner.Text()
+		r := parseAPTConfigLine(line)
+		if r.Equals(repo) {
+			// Filter repo configs that match the repo to be removed
+			continue
+		}
+		f.WriteString(line + "\n")
+	}
+	f.Close()
+	// In case of error clean-up the .new copy
+	defer os.Remove(fileToFilter + ".new")
+
+	// Rename .list to .list.save
+	err = os.Rename(fileToFilter, fileToFilter+".save")
+	if err != nil {
+		return fmt.Errorf("Making backup copy of %s: %s", fileToFilter, err)
+	}
+
+	// Rename .list.new to .list
+	err = os.Rename(fileToFilter+".new", fileToFilter)
+	if err != nil {
+		// Try to rollback change...
+		os.Rename(fileToFilter+".save", fileToFilter)
+		return fmt.Errorf("Renaming %s to %s: %s", fileToFilter+".new", fileToFilter, err)
+	}
+
+	return nil
+}
