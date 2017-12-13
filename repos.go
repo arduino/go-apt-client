@@ -222,11 +222,8 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	}
 
 	// Create the new version of the file
-	f, err := os.OpenFile(fileToFilter+".new", os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return fmt.Errorf("Writing of new config %s: %s", fileToFilter+".new", err)
-	}
 	scanner := bufio.NewScanner(bytes.NewReader(data))
+	newContent := ""
 	for scanner.Scan() {
 		line := scanner.Text()
 		r := parseAPTConfigLine(line)
@@ -234,24 +231,42 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 			// Filter repo configs that match the repo to be removed
 			continue
 		}
-		f.WriteString(line + "\n")
-	}
-	f.Close()
-	// In case of error clean-up the .new copy
-	defer os.Remove(fileToFilter + ".new")
-
-	// Rename .list to .list.save
-	err = os.Rename(fileToFilter, fileToFilter+".save")
-	if err != nil {
-		return fmt.Errorf("Making backup copy of %s: %s", fileToFilter, err)
+		newContent += line + "\n"
 	}
 
-	// Rename .list.new to .list
-	err = os.Rename(fileToFilter+".new", fileToFilter)
+	err = replaceFile(fileToFilter, []byte(newContent))
 	if err != nil {
-		// Try to rollback change...
-		os.Rename(fileToFilter+".save", fileToFilter)
-		return fmt.Errorf("Renaming %s to %s: %s", fileToFilter+".new", fileToFilter, err)
+		return fmt.Errorf("Writing of new config: %s", err)
+	}
+
+	return nil
+}
+
+func replaceFile(path string, newContent []byte) error {
+	newPath := path + ".new"
+	backupPath := path + ".save"
+
+	// Create the new version of the file
+	err := ioutil.WriteFile(newPath, newContent, 0644)
+	if err != nil {
+		return fmt.Errorf("Creating replacement file for %s: %s", newPath, err)
+	}
+
+	// Only in case of error clean-up the new copy (otherwise ignore the error...)
+	defer os.Remove(newPath)
+
+	// Make a backup copy
+	err = os.Rename(path, backupPath)
+	if err != nil {
+		return fmt.Errorf("Making backup copy of %s: %s", path, err)
+	}
+
+	// Rename the new copy to the final path
+	err = os.Rename(newPath, path)
+	if err != nil {
+		// Something went wrong... try to rollback the backup
+		os.Rename(backupPath, path)
+		return fmt.Errorf("Renaming %s to %s: %s", newPath, path, err)
 	}
 
 	return nil
