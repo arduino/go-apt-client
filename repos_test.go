@@ -69,6 +69,7 @@ func TestAddAndRemoveRepository(t *testing.T) {
 	err = AddRepository(repo2, "testdata/apt2")
 	require.NoError(t, err, "Adding repository")
 
+	// check that we have repo1 and repo2 added
 	repos, err := ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
@@ -77,9 +78,16 @@ func TestAddAndRemoveRepository(t *testing.T) {
 	err = AddRepository(repo2, "testdata/apt2")
 	require.Error(t, err, "Adding repository again")
 
+	// no changes should have happened
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
+	require.NoError(t, err, "running List command")
+	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
+	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
+
 	err = RemoveRepository(repo2, "testdata/apt2")
 	require.NoError(t, err, "Removing repository")
 
+	// repo2 should be removed
 	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
