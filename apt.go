@@ -38,7 +38,13 @@ type Package struct {
 // List returns a list of packages available in the system with their
 // respective status.
 func List() ([]*Package, error) {
-	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\n")
+	return Search("*")
+}
+
+// Search list packages available in the system that match the search
+// pattern
+func Search(pattern string) ([]*Package, error) {
+	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\n", pattern)
 	out, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("running dpkg-query: %s", err)
