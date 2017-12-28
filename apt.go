@@ -83,8 +83,14 @@ func ListUpgradable() ([]*Package, error) {
 		if len(matches) == 0 {
 			continue
 		}
+
+		// Remove repository information in name
+		// example: "libgweather-common/zesty-updates,zesty-updates"
+		//       -> "libgweather-common"
+		name := strings.Split(matches[0][1], "/")[0]
+
 		res = append(res, &Package{
-			Name:         matches[0][1],
+			Name:         name,
 			Status:       "upgradable",
 			Version:      matches[0][2],
 			Architecture: matches[0][3],
