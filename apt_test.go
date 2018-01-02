@@ -38,16 +38,26 @@ func TestList(t *testing.T) {
 			continue
 		}
 		statusCount[p.Status]++
-		fmt.Printf("%+v\n", p)
+		// fmt.Printf("%+v\n", p)
 	}
 
-	fmt.Println("Summary:")
-	for k, v := range statusCount {
-		fmt.Printf("  %s: %d\n", k, v)
-	}
+	// fmt.Println("Summary:")
+	// for k, v := range statusCount {
+	// 	fmt.Printf("  %s: %d\n", k, v)
+	// }
 
 	require.NotNil(t, dpkg, "search package 'dpkg'")
 	require.Equal(t, "installed", dpkg.Status, "'dpkg' status")
+}
+
+func TestSearch(t *testing.T) {
+	list, err := Search("nonexisting")
+	require.NoError(t, err, "running Search command")
+	require.Empty(t, list, "Search command result")
+
+	list, err = Search("header")
+	require.NoError(t, err, "running Search command")
+	require.NotEmpty(t, list, "Search command result")
 }
 
 func TestListUpgradable(t *testing.T) {
