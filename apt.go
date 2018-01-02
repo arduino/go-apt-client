@@ -44,13 +44,19 @@ func List() ([]*Package, error) {
 // Search list packages available in the system that match the search
 // pattern
 func Search(pattern string) ([]*Package, error) {
-	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\n", pattern)
-	out, err := cmd.Output()
+	res := []*Package{}
+
+	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\n", "*"+pattern+"*")
+
+	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf("running dpkg-query: %s", err)
+		// Avoid returning an error if the list is empty
+		if bytes.Contains(out, []byte("no packages found matching")) {
+			return res, nil
+		}
+		return nil, fmt.Errorf("running dpkg-query: %s - %s", err, out)
 	}
 
-	res := []*Package{}
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), "\t")
