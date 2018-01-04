@@ -47,19 +47,22 @@ func List() ([]*Package, error) {
 // Search list packages available in the system that match the search
 // pattern
 func Search(pattern string) ([]*Package, error) {
-	res := []*Package{}
-
 	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n", "*"+pattern+"*")
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		// Avoid returning an error if the list is empty
 		if bytes.Contains(out, []byte("no packages found matching")) {
-			return res, nil
+			return []*Package{}, nil
 		}
 		return nil, fmt.Errorf("running dpkg-query: %s - %s", err, out)
 	}
 
+	return parseDpkgQueryOutput(out), nil
+}
+
+func parseDpkgQueryOutput(out []byte) []*Package {
+	res := []*Package{}
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), "\t")
@@ -77,8 +80,7 @@ func Search(pattern string) ([]*Package, error) {
 			ShortDescription: data[5],
 		})
 	}
-
-	return res, nil
+	return res
 }
 
 // CheckForUpdates runs an apt update to retrieve new packages available

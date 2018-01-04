@@ -19,35 +19,29 @@
 package apt
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestList(t *testing.T) {
-	list, err := List()
-	require.NoError(t, err, "running List command")
-	require.NotEmpty(t, list, "List command result")
+	out, err := ioutil.ReadFile("testdata/dpkg-query-output-1.txt")
+	require.NoError(t, err, "Reading test input data")
+	list := parseDpkgQueryOutput(out)
 
-	var dpkg *Package
-	statusCount := map[string]int{}
-	for _, p := range list {
-		if p.Name == "dpkg" {
-			dpkg = p
-			continue
-		}
-		statusCount[p.Status]++
-		// fmt.Printf("%+v\n", p)
+	// Check list with expected output
+	data, err := ioutil.ReadFile("testdata/dpkg-query-output-1-result.json")
+	require.NoError(t, err, "Reading test result data")
+	var expected []*Package
+	err = json.Unmarshal(data, &expected)
+	require.NoError(t, err, "Unmarshaling test result data")
+	require.Equal(t, len(expected), len(list), "Length of result")
+	for i := range expected {
+		require.Equal(t, expected[i], list[i], "Element", i, "of the result")
 	}
-
-	// fmt.Println("Summary:")
-	// for k, v := range statusCount {
-	// 	fmt.Printf("  %s: %d\n", k, v)
-	// }
-
-	require.NotNil(t, dpkg, "search package 'dpkg'")
-	require.Equal(t, "installed", dpkg.Status, "'dpkg' status")
 }
 
 func TestSearch(t *testing.T) {
