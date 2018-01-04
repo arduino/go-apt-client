@@ -24,15 +24,18 @@ import (
 	"fmt"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
 // Package is a package available in the APT system
 type Package struct {
-	Name         string
-	Status       string
-	Architecture string
-	Version      string
+	Name             string
+	Status           string
+	Architecture     string
+	Version          string
+	ShortDescription string
+	InstalledSizeKB  int
 }
 
 // List returns a list of packages available in the system with their
@@ -46,7 +49,7 @@ func List() ([]*Package, error) {
 func Search(pattern string) ([]*Package, error) {
 	res := []*Package{}
 
-	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\n", "*"+pattern+"*")
+	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n", "*"+pattern+"*")
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -60,11 +63,18 @@ func Search(pattern string) ([]*Package, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), "\t")
+		size, err := strconv.Atoi(data[4])
+		if err != nil {
+			// Ignore error
+			size = 0
+		}
 		res = append(res, &Package{
-			Name:         data[0],
-			Architecture: data[1],
-			Status:       data[2],
-			Version:      data[3],
+			Name:             data[0],
+			Architecture:     data[1],
+			Status:           data[2],
+			Version:          data[3],
+			InstalledSizeKB:  size,
+			ShortDescription: data[5],
 		})
 	}
 
