@@ -47,7 +47,7 @@ func List() ([]*Package, error) {
 // Search list packages available in the system that match the search
 // pattern
 func Search(pattern string) ([]*Package, error) {
-	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n", "*"+pattern+"*")
+	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n", pattern)
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
