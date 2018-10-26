@@ -142,6 +142,12 @@ func UpgradeAll() (output []byte, err error) {
 	return cmd.CombinedOutput()
 }
 
+// DistUpgrade upgrades all upgradable packages, it may remove older versions to install newer ones.
+func DistUpgrade() (output []byte, err error) {
+	cmd := exec.Command("apt-get", "dist-upgrade", "-y")
+	return cmd.CombinedOutput()
+}
+
 // Remove removes a set of packages
 func Remove(packs ...*Package) (output []byte, err error) {
 	args := []string{"remove", "-y"}
