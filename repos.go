@@ -150,7 +150,13 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 // get information about all configured repositories, it scans also
 // "source.list.d" subfolder to find all the "*.list" files.
 func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
-	sources := []string{filepath.Join(folderPath, "sources.list")}
+	sources := make([]string, 0)
+
+
+	sourcesFile := filepath.Join(folderPath, "sources.list")
+	if FileExists(sourcesFile) {
+		sources = append(sources, sourcesFile)
+	}
 
 	sourcesFolder := filepath.Join(folderPath, "sources.list.d")
 	list, err := ioutil.ReadDir(sourcesFolder)
