@@ -23,6 +23,10 @@ import (
 	"os"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,7 +41,7 @@ func TestParseAPTConfigFolder(t *testing.T) {
 	require.NoError(t, err, "Decoding expected data")
 
 	for i, repo := range repos {
-		require.EqualValues(t, expected[i], repo, "Comparing element %d", i)
+		assert.Empty(t, cmp.Diff(expected[i], repo, cmpopts.IgnoreFields(Repository{}, "configFile")))
 	}
 }
 
