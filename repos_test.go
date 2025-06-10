@@ -20,7 +20,6 @@ package apt
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -31,7 +30,7 @@ func TestParseAPTConfigFolder(t *testing.T) {
 	repos, err := ParseAPTConfigFolder("testdata/apt")
 	require.NoError(t, err, "running List command")
 
-	expectedData, err := ioutil.ReadFile("testdata/TestParseAPTConfigFolder.json")
+	expectedData, err := os.ReadFile("testdata/TestParseAPTConfigFolder.json")
 	require.NoError(t, err, "Reading test data")
 	expected := []*Repository{}
 	err = json.Unmarshal(expectedData, &expected)

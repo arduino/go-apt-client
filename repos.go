@@ -22,7 +22,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -127,7 +126,7 @@ func parseAPTConfigLine(line string) *Repository {
 }
 
 func parseAPTConfigFile(configPath string) (RepositoryList, error) {
-	data, err := ioutil.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
 		return nil, fmt.Errorf("Reading %s: %s", configPath, err)
 	}
@@ -153,7 +152,7 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	sources := []string{filepath.Join(folderPath, "sources.list")}
 
 	sourcesFolder := filepath.Join(folderPath, "sources.list.d")
-	list, err := ioutil.ReadDir(sourcesFolder)
+	list, err := os.ReadDir(sourcesFolder)
 	if err != nil {
 		return nil, fmt.Errorf("Reading %s folder: %s", sourcesFolder, err)
 	}
@@ -219,7 +218,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 
 	// Read the config file that contains the repo config to remove
 	fileToFilter := repoToRemove.configFile
-	data, err := ioutil.ReadFile(fileToFilter)
+	data, err := os.ReadFile(fileToFilter)
 	if err != nil {
 		return fmt.Errorf("Reading config file %s: %s", fileToFilter, err)
 	}
@@ -230,7 +229,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 		r := parseAPTConfigLine(line)
-		if r!= nil && r.Equals(repo) {
+		if r != nil && r.Equals(repo) {
 			// Filter repo configs that match the repo to be removed
 			continue
 		}
@@ -262,7 +261,7 @@ func EditRepository(old *Repository, new *Repository, configFolderPath string) e
 
 	// Read the config file that contains the repo configuration to edit
 	fileToEdit := repoToEdit.configFile
-	data, err := ioutil.ReadFile(fileToEdit)
+	data, err := os.ReadFile(fileToEdit)
 	if err != nil {
 		return fmt.Errorf("Reading config file %s: %s", fileToEdit, err)
 	}
@@ -294,7 +293,7 @@ func replaceFile(path string, newContent []byte) error {
 	backupPath := path + ".save"
 
 	// Create the new version of the file
-	err := ioutil.WriteFile(newPath, newContent, 0644)
+	err := os.WriteFile(newPath, newContent, 0644)
 	if err != nil {
 		return fmt.Errorf("Creating replacement file for %s: %s", newPath, err)
 	}

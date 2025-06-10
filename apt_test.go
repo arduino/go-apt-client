@@ -21,19 +21,19 @@ package apt
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestList(t *testing.T) {
-	out, err := ioutil.ReadFile("testdata/dpkg-query-output-1.txt")
+	out, err := os.ReadFile("testdata/dpkg-query-output-1.txt")
 	require.NoError(t, err, "Reading test input data")
 	list := parseDpkgQueryOutput(out)
 
 	// Check list with expected output
-	data, err := ioutil.ReadFile("testdata/dpkg-query-output-1-result.json")
+	data, err := os.ReadFile("testdata/dpkg-query-output-1-result.json")
 	require.NoError(t, err, "Reading test result data")
 	var expected []*Package
 	err = json.Unmarshal(data, &expected)
