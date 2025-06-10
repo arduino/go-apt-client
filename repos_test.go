@@ -43,9 +43,11 @@ func TestParseAPTConfigFolder(t *testing.T) {
 
 func TestAddAndRemoveRepository(t *testing.T) {
 	// test cleanup
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list")
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list.save")
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list.new")
+	defer func() {
+		require.NoError(t, os.Remove("testdata/apt2/sources.list.d/managed.list"))
+		require.NoError(t, os.Remove("testdata/apt2/sources.list.d/managed.list.save"))
+		require.NoError(t, os.Remove("testdata/apt2/sources.list.d/managed.list.new"))
+	}()
 
 	repo1 := &Repository{
 		Enabled:      true,

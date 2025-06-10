@@ -1,0 +1,35 @@
+
+version: "3"
+vars:
+  GOLANGCI_LINT_VERSION: v2.1.6
+  GOIMPORTS_VERSION: v0.34.0
+  DPRINT_VERSION: 0.50.0
+tasks:
+  init:
+    desc: Setup local env
+    deps:
+      - install:linter
+      - install:goimports
+
+  install:linter:
+    cmds:
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b .bin/ {{ .GOLANGCI_LINT_VERSION }}
+
+  install:goimports:
+    cmds:
+      - go install golang.org/x/tools/cmd/goimports@{{ .GOIMPORTS_VERSION }}
+
+  test:
+    desc: Run all tests
+    cmds:
+      - go test ./... -v -race {{ .CLI_ARGS }}
+
+  lint:
+    desc: Run the linters
+    cmds:
+      - ${PWD}/.bin/golangci-lint run --fix -v --timeout 300s {{ .CLI_ARGS }}
+
+  fmt:
+    desc: Run format
+    cmds:
+      - goimports -l -w .
