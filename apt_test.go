@@ -49,7 +49,7 @@ func TestSearch(t *testing.T) {
 	require.NoError(t, err, "running Search command")
 	require.Empty(t, list, "Search command result")
 
-	list, err = Search("header")
+	list, err = Search("bash") // "bash" is almost always present on Linux systems
 	require.NoError(t, err, "running Search command")
 	require.NotEmpty(t, list, "Search command result")
 }
