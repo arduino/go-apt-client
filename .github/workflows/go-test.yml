@@ -2,7 +2,7 @@ name: Run Go Tests
 
 on:
   push:
-     branches: ["**"]
+    branches: ["**"]
   pull_request:
     branches: ["**"]
 
@@ -19,8 +19,14 @@ jobs:
         with:
           go-version: 1.24.0
 
+      - name: Install Task
+        run: |
+          sh -s -- -d -b /usr/local/bin <<EOF
+          $(curl -s https://taskfile.dev/install.sh)
+          EOF
+
       - name: Get dependencies
         run: go mod tidy
 
       - name: Run tests
-        run: go test -v -race ./...
+        run: task test-linux
