@@ -1,0 +1,65 @@
+
+version: "3"
+
+vars:
+  # Path of the project's primary Go module:
+  DEFAULT_GO_MODULE_PATH: ./
+  DEFAULT_GO_PACKAGES:
+    sh: |
+      echo $(
+        cd {{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}} &&
+        go list ./... | tr '\n' ' ' ||
+        echo '"ERROR: Unable to discover Go packages"'
+      )
+  # `-ldflags` flag to use for `go build` command
+  # TODO: define flag if required by the project, or leave empty if not needed.
+  LDFLAGS:
+
+tasks:
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:fix:
+    desc: Modernize usages of outdated APIs
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - go fix {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:format:
+    desc: Format Go code
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - go fmt {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:lint:
+    desc: Lint Go code
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - |
+        if ! which golangci-lint &>/dev/null; then
+          echo "golangci-lint not installed or not in PATH."
+          echo "Please install: https://golangci-lint.run/usage/install/#local-installation"
+          exit 1
+        fi
+      - golangci-lint run
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/test-go-task/Taskfile.yml
+  go:test:
+    desc: Run unit tests
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - |
+        go test \
+          -v \
+          -short \
+          -run '{{default ".*" .GO_TEST_REGEX}}' \
+          {{default "-timeout 10m -coverpkg=./... -covermode=atomic" .GO_TEST_FLAGS}} \
+          -coverprofile=coverage_unit.txt \
+          {{.TEST_LDFLAGS}} \
+          {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  go:test:docker:
+    desc: Run the tests inside a docker image
+    cmds:
+      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
+      - docker run --rm go-apt-test

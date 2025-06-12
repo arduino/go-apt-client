@@ -22,7 +22,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -114,7 +113,6 @@ func parseAPTConfigLine(line string) *Repository {
 		return nil
 	}
 	fields := match[0]
-	//fmt.Printf("%+v\n", fields)
 	return &Repository{
 		Enabled:      fields[1] != "# ",
 		SourceRepo:   fields[2] == "deb-src",
@@ -127,9 +125,9 @@ func parseAPTConfigLine(line string) *Repository {
 }
 
 func parseAPTConfigFile(configPath string) (RepositoryList, error) {
-	data, err := ioutil.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return nil, fmt.Errorf("Reading %s: %s", configPath, err)
+		return nil, fmt.Errorf("reading %s: %s", configPath, err)
 	}
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 
@@ -137,7 +135,6 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		repo := parseAPTConfigLine(line)
-		//fmt.Printf("%+v\n", repo)
 		if repo != nil {
 			repo.configFile = configPath
 			res = append(res, repo)
@@ -153,9 +150,9 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	sources := []string{filepath.Join(folderPath, "sources.list")}
 
 	sourcesFolder := filepath.Join(folderPath, "sources.list.d")
-	list, err := ioutil.ReadDir(sourcesFolder)
+	list, err := os.ReadDir(sourcesFolder)
 	if err != nil {
-		return nil, fmt.Errorf("Reading %s folder: %s", sourcesFolder, err)
+		return nil, fmt.Errorf("reading %s folder: %s", sourcesFolder, err)
 	}
 	for _, l := range list {
 		if strings.HasSuffix(l.Name(), ".list") {
@@ -167,7 +164,7 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 	for _, source := range sources {
 		repos, err := parseAPTConfigFile(source)
 		if err != nil {
-			return nil, fmt.Errorf("Parsing %s: %s", source, err)
+			return nil, fmt.Errorf("parsing %s: %s", source, err)
 		}
 		res = append(res, repos...)
 	}
@@ -183,7 +180,7 @@ func AddRepository(repo *Repository, configFolderPath string) error {
 		return fmt.Errorf("parsing APT config: %s", err)
 	}
 	if repos.Contains(repo) {
-		return fmt.Errorf("The repository is already configured")
+		return fmt.Errorf("the repository is already configured")
 	}
 
 	// Add to the "managed.list" file
@@ -193,11 +190,11 @@ func AddRepository(repo *Repository, configFolderPath string) error {
 		f, err = os.OpenFile(managedPath, os.O_CREATE|os.O_WRONLY, 0644)
 	}
 	if err != nil {
-		return fmt.Errorf("Opening %s: %s", managedPath, err)
+		return fmt.Errorf("opening %s: %s", managedPath, err)
 	}
-	defer f.Close()
+	defer f.Close() //nolint:errcheck
 	if _, err = f.WriteString(repo.APTConfigLine() + "\n"); err != nil {
-		return fmt.Errorf("Writing repo data to config file %s: %s", managedPath, err)
+		return fmt.Errorf("writing repo data to config file %s: %s", managedPath, err)
 	}
 	return nil
 }
@@ -214,14 +211,14 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	// Find the repo to remove
 	repoToRemove := repos.Find(repo)
 	if repoToRemove == nil {
-		return fmt.Errorf("Repository already removed")
+		return fmt.Errorf("repository already removed")
 	}
 
 	// Read the config file that contains the repo config to remove
 	fileToFilter := repoToRemove.configFile
-	data, err := ioutil.ReadFile(fileToFilter)
+	data, err := os.ReadFile(fileToFilter)
 	if err != nil {
-		return fmt.Errorf("Reading config file %s: %s", fileToFilter, err)
+		return fmt.Errorf("reading config file %s: %s", fileToFilter, err)
 	}
 
 	// Create the new version of the file
@@ -230,7 +227,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 		r := parseAPTConfigLine(line)
-		if r!= nil && r.Equals(repo) {
+		if r != nil && r.Equals(repo) {
 			// Filter repo configs that match the repo to be removed
 			continue
 		}
@@ -239,7 +236,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 
 	err = replaceFile(fileToFilter, []byte(newContent))
 	if err != nil {
-		return fmt.Errorf("Writing of new config: %s", err)
+		return fmt.Errorf("writing of new config: %s", err)
 	}
 
 	return nil
@@ -247,7 +244,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 
 // EditRepository replace an old repo configuration with a new repo
 // configuration in the specified APT config folder (usually /etc/apt).
-func EditRepository(old *Repository, new *Repository, configFolderPath string) error {
+func EditRepository(old *Repository, newRepo *Repository, configFolderPath string) error {
 	// Read all repos configurations
 	repos, err := ParseAPTConfigFolder(configFolderPath)
 	if err != nil {
@@ -257,14 +254,14 @@ func EditRepository(old *Repository, new *Repository, configFolderPath string) e
 	// Find the repo to edit
 	repoToEdit := repos.Find(old)
 	if repoToEdit == nil {
-		return fmt.Errorf("Repository doesn't exist")
+		return fmt.Errorf("repository doesn't exist")
 	}
 
 	// Read the config file that contains the repo configuration to edit
 	fileToEdit := repoToEdit.configFile
-	data, err := ioutil.ReadFile(fileToEdit)
+	data, err := os.ReadFile(fileToEdit)
 	if err != nil {
-		return fmt.Errorf("Reading config file %s: %s", fileToEdit, err)
+		return fmt.Errorf("reading config file %s: %s", fileToEdit, err)
 	}
 
 	// Create the new version of the file
@@ -275,7 +272,7 @@ func EditRepository(old *Repository, new *Repository, configFolderPath string) e
 		r := parseAPTConfigLine(line)
 		if r.Equals(old) {
 			// Write the new config to replace the old one
-			newContent += new.APTConfigLine() + "\n"
+			newContent += newRepo.APTConfigLine() + "\n"
 			continue
 		}
 		newContent += line + "\n"
@@ -283,7 +280,7 @@ func EditRepository(old *Repository, new *Repository, configFolderPath string) e
 
 	err = replaceFile(fileToEdit, []byte(newContent))
 	if err != nil {
-		return fmt.Errorf("Writing of new config: %s", err)
+		return fmt.Errorf("writing of new config: %s", err)
 	}
 
 	return nil
@@ -294,26 +291,29 @@ func replaceFile(path string, newContent []byte) error {
 	backupPath := path + ".save"
 
 	// Create the new version of the file
-	err := ioutil.WriteFile(newPath, newContent, 0644)
+	err := os.WriteFile(newPath, newContent, 0600)
 	if err != nil {
-		return fmt.Errorf("Creating replacement file for %s: %s", newPath, err)
+		return fmt.Errorf("creating replacement file for %s: %s", newPath, err)
 	}
 
 	// Only in case of error clean-up the new copy (otherwise ignore the error...)
-	defer os.Remove(newPath)
+	defer os.Remove(newPath) //nolint:errcheck
 
 	// Make a backup copy
 	err = os.Rename(path, backupPath)
 	if err != nil {
-		return fmt.Errorf("Making backup copy of %s: %s", path, err)
+		return fmt.Errorf("making backup copy of %s: %s", path, err)
 	}
 
 	// Rename the new copy to the final path
 	err = os.Rename(newPath, path)
 	if err != nil {
 		// Something went wrong... try to rollback the backup
-		os.Rename(backupPath, path)
-		return fmt.Errorf("Renaming %s to %s: %s", newPath, path, err)
+		err := os.Rename(backupPath, path)
+		if err != nil {
+			return fmt.Errorf("rolling back backup copy of %s: %s", path, err)
+		}
+		return fmt.Errorf("renaming %s to %s: %s", newPath, path, err)
 	}
 
 	return nil

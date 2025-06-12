@@ -20,9 +20,12 @@ package apt
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/require"
 )
@@ -31,22 +34,22 @@ func TestParseAPTConfigFolder(t *testing.T) {
 	repos, err := ParseAPTConfigFolder("testdata/apt")
 	require.NoError(t, err, "running List command")
 
-	expectedData, err := ioutil.ReadFile("testdata/TestParseAPTConfigFolder.json")
+	expectedData, err := os.ReadFile("testdata/TestParseAPTConfigFolder.json")
 	require.NoError(t, err, "Reading test data")
 	expected := []*Repository{}
 	err = json.Unmarshal(expectedData, &expected)
 	require.NoError(t, err, "Decoding expected data")
 
 	for i, repo := range repos {
-		require.EqualValues(t, expected[i], repo, "Comparing element %d", i)
+		assert.Empty(t, cmp.Diff(expected[i], repo, cmpopts.IgnoreFields(Repository{}, "configFile")))
 	}
 }
 
 func TestAddAndRemoveRepository(t *testing.T) {
 	// test cleanup
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list")
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list.save")
-	defer os.Remove("testdata/apt2/sources.list.d/managed.list.new")
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list")      //nolint:errcheck
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list.save") //nolint:errcheck
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list.new")  //nolint:errcheck
 
 	repo1 := &Repository{
 		Enabled:      true,
