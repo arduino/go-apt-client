@@ -22,6 +22,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -64,6 +65,8 @@ func Search(pattern string) ([]*Package, error) {
 func parseDpkgQueryOutput(out []byte) []*Package {
 	res := []*Package{}
 	scanner := bufio.NewScanner(bytes.NewReader(out))
+	buf := make([]byte, 0, 1024*1024) // 1 MB buffer
+	scanner.Buffer(buf, 1024*1024)    // Set max buffer size to 1 MB
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), "\t")
 		size, err := strconv.Atoi(data[4])
@@ -98,10 +101,20 @@ func ListUpgradable() ([]*Package, error) {
 	if err != nil {
 		return nil, fmt.Errorf("running apt list: %s", err)
 	}
+
+	res := parseListUpgradableOutput(bytes.NewReader(out))
+	return res, nil
+}
+
+func parseListUpgradableOutput(r io.Reader) []*Package {
+	// Example of matched line:
+	// xserver-xorg-core/focal-updates 2:1.20.13-1ubuntu1~20.04.20 amd64 [upgradable from: 2:1.20.13-1ubuntu1~20.04.19]
 	re := regexp.MustCompile(`^([^ ]+) ([^ ]+) ([^ ]+)( \[upgradable from: [^\[\]]*\])?`)
 
 	res := []*Package{}
-	scanner := bufio.NewScanner(bytes.NewReader(out))
+	scanner := bufio.NewScanner(r)
+	buf := make([]byte, 0, 1024*1024) // 1 MB buffer
+	scanner.Buffer(buf, 1024*1024)    // Set max buffer size to 1 MB
 	for scanner.Scan() {
 		matches := re.FindAllStringSubmatch(scanner.Text(), -1)
 		if len(matches) == 0 {
@@ -120,7 +133,7 @@ func ListUpgradable() ([]*Package, error) {
 			Architecture: matches[0][3],
 		})
 	}
-	return res, nil
+	return res
 }
 
 // Upgrade runs the upgrade for a set of packages
