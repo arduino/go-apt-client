@@ -22,6 +22,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -85,6 +86,7 @@ func parseDpkgQueryOutput(out []byte) []*Package {
 
 // CheckForUpdates runs an apt update to retrieve new packages available
 // from the repositories
+// NOTE: it requires root privileges to run
 func CheckForUpdates() (output []byte, err error) {
 	cmd := exec.Command("apt-get", "update", "-q")
 	return cmd.CombinedOutput()
@@ -98,10 +100,18 @@ func ListUpgradable() ([]*Package, error) {
 	if err != nil {
 		return nil, fmt.Errorf("running apt list: %s", err)
 	}
+
+	res := parseListUpgradableOutput(bytes.NewReader(out))
+	return res, nil
+}
+
+func parseListUpgradableOutput(r io.Reader) []*Package {
+	// Example of matched line:
+	// xserver-xorg-core/focal-updates 2:1.20.13-1ubuntu1~20.04.20 amd64 [upgradable from: 2:1.20.13-1ubuntu1~20.04.19]
 	re := regexp.MustCompile(`^([^ ]+) ([^ ]+) ([^ ]+)( \[upgradable from: [^\[\]]*\])?`)
 
 	res := []*Package{}
-	scanner := bufio.NewScanner(bytes.NewReader(out))
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		matches := re.FindAllStringSubmatch(scanner.Text(), -1)
 		if len(matches) == 0 {
@@ -120,7 +130,7 @@ func ListUpgradable() ([]*Package, error) {
 			Architecture: matches[0][3],
 		})
 	}
-	return res, nil
+	return res
 }
 
 // Upgrade runs the upgrade for a set of packages

@@ -99,8 +99,7 @@ jobs:
       - name: Run tests
         env:
           GO_MODULE_PATH: ${{ matrix.module.path }}
-        # run: task go:test  ## TODO: refactor the tests
-        run: task go:test:docker
+        run: task go:test
 
       - name: Send unit tests coverage to Codecov
         if: runner.os == 'Linux'

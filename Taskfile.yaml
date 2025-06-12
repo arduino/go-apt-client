@@ -57,9 +57,3 @@ tasks:
           -coverprofile=coverage_unit.txt \
           {{.TEST_LDFLAGS}} \
           {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
-
-  go:test:docker:
-    desc: Run the tests inside a docker image
-    cmds:
-      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
-      - docker run --rm go-apt-test
