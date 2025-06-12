@@ -20,6 +20,7 @@ on:
       - "**/testdata/**"
   pull_request:
     paths:
+    paths:
       - ".github/workflows/test-go-task.ya?ml"
       - ".github/.?codecov.ya?ml"
       - "dev/.?codecov.ya?ml"
