@@ -58,7 +58,7 @@ tasks:
           {{.TEST_LDFLAGS}} \
           {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
 
-  test-linux:
+  go:test:docker:
     desc: Run the tests inside a docker image
     cmds:
       - docker build -f testdata/Dockerfile -t go-apt-test:latest .
