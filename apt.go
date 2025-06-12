@@ -65,8 +65,6 @@ func Search(pattern string) ([]*Package, error) {
 func parseDpkgQueryOutput(out []byte) []*Package {
 	res := []*Package{}
 	scanner := bufio.NewScanner(bytes.NewReader(out))
-	buf := make([]byte, 0, 1024*1024) // 1 MB buffer
-	scanner.Buffer(buf, 1024*1024)    // Set max buffer size to 1 MB
 	for scanner.Scan() {
 		data := strings.Split(scanner.Text(), "\t")
 		size, err := strconv.Atoi(data[4])
@@ -113,8 +111,6 @@ func parseListUpgradableOutput(r io.Reader) []*Package {
 
 	res := []*Package{}
 	scanner := bufio.NewScanner(r)
-	buf := make([]byte, 0, 1024*1024) // 1 MB buffer
-	scanner.Buffer(buf, 1024*1024)    // Set max buffer size to 1 MB
 	for scanner.Scan() {
 		matches := re.FindAllStringSubmatch(scanner.Text(), -1)
 		if len(matches) == 0 {
