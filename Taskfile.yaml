@@ -1,3 +1,4 @@
+
 version: "3"
 
 vars:
@@ -10,6 +11,9 @@ vars:
         go list ./... | tr '\n' ' ' ||
         echo '"ERROR: Unable to discover Go packages"'
       )
+  # `-ldflags` flag to use for `go build` command
+  # TODO: define flag if required by the project, or leave empty if not needed.
+  LDFLAGS:
 
 tasks:
   # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
@@ -44,5 +48,12 @@ tasks:
     desc: Run unit tests
     dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
     cmds:
-      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
-      - docker run --rm -v "$PWD":/app go-apt-test -v -short  -run '{{default ".*" .GO_TEST_REGEX}}' {{default "-timeout 10m -coverpkg=./... -covermode=atomic" .GO_TEST_FLAGS}} -coverprofile=coverage_unit.txt  {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+      - |
+        go test \
+          -v \
+          -short \
+          -run '{{default ".*" .GO_TEST_REGEX}}' \
+          {{default "-timeout 10m -coverpkg=./... -covermode=atomic" .GO_TEST_FLAGS}} \
+          -coverprofile=coverage_unit.txt \
+          {{.TEST_LDFLAGS}} \
+          {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}

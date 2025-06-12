@@ -86,6 +86,7 @@ func parseDpkgQueryOutput(out []byte) []*Package {
 
 // CheckForUpdates runs an apt update to retrieve new packages available
 // from the repositories
+// NOTE: it requires root privileges to run
 func CheckForUpdates() (output []byte, err error) {
 	cmd := exec.Command("apt-get", "update", "-q")
 	return cmd.CombinedOutput()
