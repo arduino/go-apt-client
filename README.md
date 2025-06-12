@@ -2,6 +2,7 @@
 
 This is a golang client library for Debian APT Package Manager (`dpkg` and `apt`).
 
+[![Check Go status](https://github.com/arduino/go-apt-client/actions/workflows/check-go-task.yml/badge.svg)](https://github.com/arduino/go-apt-client/actions/workflows/check-go-task.yml)
 [![Test Go status](https://github.com/arduino/go-apt-client/actions/workflows/test-go-task.yml/badge.svg)](https://github.com/arduino/go-apt-client/actions/workflows/test-go-task.yml)
 [![Codecov](https://codecov.io/gh/arduino/go-apt-client/branch/main/graph/badge.svg)](https://codecov.io/gh/arduino/go-apt-client)
 
