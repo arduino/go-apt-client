@@ -128,7 +128,7 @@ jobs:
       - name: Install golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.54
+          version: v2.1.6
 
       - name: Check style
         env:
