@@ -1,5 +1,10 @@
 name: Run Go Tests
 
+
+env:
+  # See: https://github.com/actions/setup-go/tree/main#supported-version-syntax
+  GO_VERSION: "1.24"
+
 on:
   push:
     branches: ["**"]
@@ -17,13 +22,13 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.24.0
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Install Task
-        run: |
-          sh -s -- -d -b /usr/local/bin <<EOF
-          $(curl -s https://taskfile.dev/install.sh)
-          EOF
+        uses: arduino/setup-task@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          version: 3.x
 
       - name: Get dependencies
         run: go mod tidy

@@ -113,7 +113,6 @@ func parseAPTConfigLine(line string) *Repository {
 		return nil
 	}
 	fields := match[0]
-	//fmt.Printf("%+v\n", fields)
 	return &Repository{
 		Enabled:      fields[1] != "# ",
 		SourceRepo:   fields[2] == "deb-src",
@@ -136,7 +135,6 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		repo := parseAPTConfigLine(line)
-		//fmt.Printf("%+v\n", repo)
 		if repo != nil {
 			repo.configFile = configPath
 			res = append(res, repo)
@@ -246,7 +244,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 
 // EditRepository replace an old repo configuration with a new repo
 // configuration in the specified APT config folder (usually /etc/apt).
-func EditRepository(old *Repository, new *Repository, configFolderPath string) error {
+func EditRepository(old *Repository, newRepo *Repository, configFolderPath string) error {
 	// Read all repos configurations
 	repos, err := ParseAPTConfigFolder(configFolderPath)
 	if err != nil {
@@ -274,7 +272,7 @@ func EditRepository(old *Repository, new *Repository, configFolderPath string) e
 		r := parseAPTConfigLine(line)
 		if r.Equals(old) {
 			// Write the new config to replace the old one
-			newContent += new.APTConfigLine() + "\n"
+			newContent += newRepo.APTConfigLine() + "\n"
 			continue
 		}
 		newContent += line + "\n"
@@ -293,7 +291,7 @@ func replaceFile(path string, newContent []byte) error {
 	backupPath := path + ".save"
 
 	// Create the new version of the file
-	err := os.WriteFile(newPath, newContent, 0644)
+	err := os.WriteFile(newPath, newContent, 0600)
 	if err != nil {
 		return fmt.Errorf("creating replacement file for %s: %s", newPath, err)
 	}

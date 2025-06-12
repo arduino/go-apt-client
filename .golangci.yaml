@@ -1,0 +1,40 @@
+version: "2"
+linters:
+  enable:
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gosec
+    - importas
+    - misspell
+    - revive
+    - unconvert
+    - unparam
+  settings:
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/bcmi-labs/provisoning-api
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
