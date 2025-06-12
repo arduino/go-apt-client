@@ -71,7 +71,7 @@ func TestCheckForUpdates(t *testing.T) {
 }
 
 func TestParseListUpgradableOutput(t *testing.T) {
-	t.Run("special cases", func(t *testing.T) {
+	t.Run("edges cases", func(t *testing.T) {
 		tests := []struct {
 			name     string
 			input    string
@@ -84,7 +84,7 @@ func TestParseListUpgradableOutput(t *testing.T) {
 			},
 			{
 				name:     "line not matching regex",
-				input:    "this-is-not-a-valid-line\n",
+				input:    "this-is-not a-valid-line\n",
 				expected: []*Package{},
 			},
 			{

@@ -10,10 +10,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy everything (mod files + code)
-COPY . .
+COPY go.mod go.sum ./
 
 # Download modules
 RUN go mod download
 
 # Run tests in apt package
-CMD ["go", "test", "-v", "./"]
+ENTRYPOINT ["go", "test"]
