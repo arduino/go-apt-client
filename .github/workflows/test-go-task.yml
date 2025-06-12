@@ -107,4 +107,4 @@ jobs:
         with:
           file: ${{ matrix.module.path }}coverage_unit.txt
           flags: ${{ matrix.module.codecov-flags }}
-          fail_ci_if_error: ${{ github.repository == 'TODO_REPO_OWNER/TODO_REPO_NAME' }}
+          fail_ci_if_error: ${{ github.repository == 'arduino/go-apt-client' }}
