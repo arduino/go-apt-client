@@ -1,45 +1,21 @@
 
 version: "3"
+
 vars:
-  GOLANGCI_LINT_VERSION: v2.1.6
-  GOIMPORTS_VERSION: v0.34.0
-  DPRINT_VERSION: 0.50.0
+  # Path of the project's primary Go module:
+  DEFAULT_GO_MODULE_PATH: ./
+  DEFAULT_GO_PACKAGES:
+    sh: |
+      echo $(
+        cd {{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}} &&
+        go list ./... | tr '\n' ' ' ||
+        echo '"ERROR: Unable to discover Go packages"'
+      )
+  # `-ldflags` flag to use for `go build` command
+  # TODO: define flag if required by the project, or leave empty if not needed.
+  LDFLAGS:
+
 tasks:
-  init:
-    desc: Setup local env
-    deps:
-      - install:linter
-      - install:goimports
-
-  install:linter:
-    cmds:
-      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b .bin/ {{ .GOLANGCI_LINT_VERSION }}
-
-  install:goimports:
-    cmds:
-      - go install golang.org/x/tools/cmd/goimports@{{ .GOIMPORTS_VERSION }}
-
-  test:
-    desc: Run all tests
-    cmds:
-      - go test ./... -v -race {{ .CLI_ARGS }}
-
-  lint:
-    desc: Run the linters
-    cmds:
-      - ${PWD}/.bin/golangci-lint run --fix -v --timeout 300s {{ .CLI_ARGS }}
-
-  fmt:
-    desc: Run format
-    cmds:
-      - goimports -l -w .
-
-  test-linux:
-    desc: Build test Linux test image
-    cmds:
-      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
-      - docker run --rm go-apt-test
-
   # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
   go:fix:
     desc: Modernize usages of outdated APIs
@@ -66,3 +42,24 @@ tasks:
           exit 1
         fi
       - golangci-lint run
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/test-go-task/Taskfile.yml
+  go:test:
+    desc: Run unit tests
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - |
+        go test \
+          -v \
+          -short \
+          -run '{{default ".*" .GO_TEST_REGEX}}' \
+          {{default "-timeout 10m -coverpkg=./... -covermode=atomic" .GO_TEST_FLAGS}} \
+          -coverprofile=coverage_unit.txt \
+          {{.TEST_LDFLAGS}} \
+          {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  test-linux:
+    desc: Run the tests inside a docker image
+    cmds:
+      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
+      - docker run --rm go-apt-test
