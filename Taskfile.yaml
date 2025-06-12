@@ -33,3 +33,11 @@ tasks:
     desc: Run format
     cmds:
       - goimports -l -w .
+  
+  test-linux:
+    desc: Build test Linux test image
+    cmds:
+      - docker build -f testdata/Dockerfile -t go-apt-test:latest .
+      - docker run --rm go-apt-test           
+
+    

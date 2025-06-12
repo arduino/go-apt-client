@@ -62,9 +62,9 @@ func TestListUpgradable(t *testing.T) {
 	require.NoError(t, err, "running List command")
 }
 
-// func TestCheckForUpdates(t *testing.T) {
-// 	out, err := CheckForUpdates()
-// 	require.NoError(t, err, "running CheckForUpdate command")
-// 	fmt.Printf(">>>\n%s\n<<<\n", string(out))
-// 	fmt.Println("ERR:", err)
-// }
+func TestCheckForUpdates(t *testing.T) {
+	out, err := CheckForUpdates()
+	require.NoError(t, err, "running CheckForUpdate command")
+	fmt.Printf(">>>\n%s\n<<<\n", string(out))
+	fmt.Println("ERR:", err)
+}
