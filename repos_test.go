@@ -47,9 +47,9 @@ func TestParseAPTConfigFolder(t *testing.T) {
 
 func TestAddAndRemoveRepository(t *testing.T) {
 	// test cleanup
-	defer os.Remove("testdata/apt3/sources.list.d/managed.list")      //nolint:errcheck
-	defer os.Remove("testdata/apt3/sources.list.d/managed.list.save") //nolint:errcheck
-	defer os.Remove("testdata/apt3/sources.list.d/managed.list.new")  //nolint:errcheck
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list")      //nolint:errcheck
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list.save") //nolint:errcheck
+	defer os.Remove("testdata/apt2/sources.list.d/managed.list.new")  //nolint:errcheck
 
 	repo1 := &Repository{
 		Enabled:      true,
@@ -67,58 +67,58 @@ func TestAddAndRemoveRepository(t *testing.T) {
 		Components:   "main",
 		Comment:      "",
 	}
-	err := AddRepository(repo1, "testdata/apt3")
+	err := AddRepository(repo1, "testdata/apt2")
 	require.NoError(t, err, "Adding repository")
-	err = AddRepository(repo2, "testdata/apt3")
+	err = AddRepository(repo2, "testdata/apt2")
 	require.NoError(t, err, "Adding repository")
 
 	// check that we have repo1 and repo2 added
-	repos, err := ParseAPTConfigFolder("testdata/apt3")
+	repos, err := ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = AddRepository(repo2, "testdata/apt3")
+	err = AddRepository(repo2, "testdata/apt2")
 	require.Error(t, err, "Adding repository again")
 
 	// no changes should have happened
-	repos, err = ParseAPTConfigFolder("testdata/apt3")
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = RemoveRepository(repo2, "testdata/apt3")
+	err = RemoveRepository(repo2, "testdata/apt2")
 	require.NoError(t, err, "Removing repository")
 
 	// repo2 should be removed
-	repos, err = ParseAPTConfigFolder("testdata/apt3")
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.False(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = RemoveRepository(repo2, "testdata/apt3")
+	err = RemoveRepository(repo2, "testdata/apt2")
 	require.Error(t, err, "Removing repository again")
 
 	// no changes should have happened
-	repos, err = ParseAPTConfigFolder("testdata/apt3")
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.False(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = EditRepository(repo1, repo2, "testdata/apt3")
+	err = EditRepository(repo1, repo2, "testdata/apt2")
 	require.NoError(t, err, "editing repository %#V -> %#V", repo1, repo2)
 
 	// repo2 should be changed to repo1
-	repos, err = ParseAPTConfigFolder("testdata/apt3")
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.False(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = EditRepository(repo1, repo2, "testdata/apt3")
+	err = EditRepository(repo1, repo2, "testdata/apt2")
 	require.Error(t, err, "editing again repository %#v -> %#v", repo1, repo2)
 
 	// no changes should have happened
-	repos, err = ParseAPTConfigFolder("testdata/apt3")
+	repos, err = ParseAPTConfigFolder("testdata/apt2")
 	require.NoError(t, err, "running List command")
 	require.False(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
