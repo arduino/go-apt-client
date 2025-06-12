@@ -33,11 +33,36 @@ tasks:
     desc: Run format
     cmds:
       - goimports -l -w .
-  
+
   test-linux:
     desc: Build test Linux test image
     cmds:
       - docker build -f testdata/Dockerfile -t go-apt-test:latest .
-      - docker run --rm go-apt-test           
+      - docker run --rm go-apt-test
 
-    
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:fix:
+    desc: Modernize usages of outdated APIs
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - go fix {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:format:
+    desc: Format Go code
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - go fmt {{default .DEFAULT_GO_PACKAGES .GO_PACKAGES}}
+
+  # Source: https://github.com/arduino/tooling-project-assets/blob/main/workflow-templates/assets/check-go-task/Taskfile.yml
+  go:lint:
+    desc: Lint Go code
+    dir: "{{default .DEFAULT_GO_MODULE_PATH .GO_MODULE_PATH}}"
+    cmds:
+      - |
+        if ! which golangci-lint &>/dev/null; then
+          echo "golangci-lint not installed or not in PATH."
+          echo "Please install: https://golangci-lint.run/usage/install/#local-installation"
+          exit 1
+        fi
+      - golangci-lint run
