@@ -44,10 +44,23 @@ func List() ([]*Package, error) {
 	return Search("*")
 }
 
+// ListInstalled returns a list of packages installed on the system.
+func ListInstalled() ([]*Package, error) {
+	return Search("")
+}
+
 // Search list packages available in the system that match the search
 // pattern
 func Search(pattern string) ([]*Package, error) {
-	cmd := exec.Command("dpkg-query", "-W", "-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n", pattern)
+	args := []string{
+		"-W",
+		"-f=${Package}\t${Architecture}\t${db:Status-Status}\t${Version}\t${Installed-Size}\t${Binary:summary}\n",
+	}
+	if pattern != "" {
+		args = append(args, pattern)
+	}
+
+	cmd := exec.Command("dpkg-query", args...)
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
