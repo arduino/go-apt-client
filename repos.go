@@ -172,9 +172,8 @@ func ParseAPTConfigFolder(folderPath string) (RepositoryList, error) {
 }
 
 // AddRepository adds the specified repository by changing the specified APT
-// config folder (usually /etc/apt). The new repository is saved into
-// a file named "managed.list"
-func AddRepository(repo *Repository, configFolderPath string) error {
+// config folder (usually /etc/apt).
+func AddRepository(repo *Repository, configFolderPath, filename string) error {
 	repos, err := ParseAPTConfigFolder(configFolderPath)
 	if err != nil {
 		return fmt.Errorf("parsing APT config: %s", err)
@@ -184,7 +183,7 @@ func AddRepository(repo *Repository, configFolderPath string) error {
 	}
 
 	// Add to the "managed.list" file
-	managedPath := filepath.Join(configFolderPath, "sources.list.d", "managed.list")
+	managedPath := filepath.Join(configFolderPath, "sources.list.d", filename)
 	f, err := os.OpenFile(managedPath, os.O_APPEND|os.O_WRONLY, 0644)
 	if os.IsNotExist(err) {
 		f, err = os.OpenFile(managedPath, os.O_CREATE|os.O_WRONLY, 0644)

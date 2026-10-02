@@ -67,9 +67,9 @@ func TestAddAndRemoveRepository(t *testing.T) {
 		Components:   "main",
 		Comment:      "",
 	}
-	err := AddRepository(repo1, "testdata/apt2")
+	err := AddRepository(repo1, "testdata/apt2", "managed.list")
 	require.NoError(t, err, "Adding repository")
-	err = AddRepository(repo2, "testdata/apt2")
+	err = AddRepository(repo2, "testdata/apt2", "managed.list")
 	require.NoError(t, err, "Adding repository")
 
 	// check that we have repo1 and repo2 added
@@ -78,7 +78,7 @@ func TestAddAndRemoveRepository(t *testing.T) {
 	require.True(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 
-	err = AddRepository(repo2, "testdata/apt2")
+	err = AddRepository(repo2, "testdata/apt2", "managed.list")
 	require.Error(t, err, "Adding repository again")
 
 	// no changes should have happened
