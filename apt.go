@@ -133,18 +133,29 @@ func Upgrade(packs ...*Package) (output []byte, err error) {
 		args = append(args, pack.Name)
 	}
 	cmd := exec.Command("apt-get", args...)
+	cmd.Env = append(cmd.Env,
+		"DEBIAN_FRONTEND=noninteractive",
+	)
+
 	return cmd.CombinedOutput()
 }
 
 // UpgradeAll upgrade all upgradable packages
 func UpgradeAll() (output []byte, err error) {
 	cmd := exec.Command("apt-get", "upgrade", "-y")
+	cmd.Env = append(cmd.Env,
+		"DEBIAN_FRONTEND=noninteractive",
+	)
+
 	return cmd.CombinedOutput()
 }
 
 // DistUpgrade upgrades all upgradable packages, it may remove older versions to install newer ones.
 func DistUpgrade() (output []byte, err error) {
 	cmd := exec.Command("apt-get", "dist-upgrade", "-y")
+	cmd.Env = append(cmd.Env,
+		"DEBIAN_FRONTEND=noninteractive",
+	)
 	return cmd.CombinedOutput()
 }
 
@@ -171,5 +182,9 @@ func Install(packs ...*Package) (output []byte, err error) {
 		args = append(args, pack.Name)
 	}
 	cmd := exec.Command("apt-get", args...)
+	cmd.Env = append(cmd.Env,
+		"DEBIAN_FRONTEND=noninteractive",
+	)
+
 	return cmd.CombinedOutput()
 }
