@@ -96,7 +96,7 @@ func (r *Repository) APTConfigLine() string {
 		res += "deb "
 	}
 	if strings.TrimSpace(r.Options) != "" {
-		res += "[" + r.Options + "]"
+		res += "[" + r.Options + "] "
 	}
 	res += r.URI + " " + r.Distribution + " " + r.Components
 	if strings.TrimSpace(r.Comment) != "" {

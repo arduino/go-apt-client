@@ -123,3 +123,25 @@ func TestAddAndRemoveRepository(t *testing.T) {
 	require.False(t, repos.Contains(repo1), "Configuration contains: %#v", repo1)
 	require.True(t, repos.Contains(repo2), "Configuration contains: %#v", repo2)
 }
+
+func TestAPTConfigLine(t *testing.T) {
+	r := &Repository{
+		Enabled:      true,
+		SourceRepo:   false,
+		Options:      "signed-by=/etc/apt/keyrings/docker.asc",
+		URI:          "https://download.docker.com/linux/debian",
+		Distribution: "bookworm",
+		Components:   "stable",
+		Comment:      "Docker's Apt repository.",
+	}
+
+	got := r.APTConfigLine()
+	expected := "deb [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable # Docker's Apt repository."
+	require.True(t, got == expected)
+
+	r.Enabled = false
+	r.SourceRepo = true
+	got = r.APTConfigLine()
+	expected = "# deb-src [signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable # Docker's Apt repository."
+	require.True(t, got == expected)
+}
