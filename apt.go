@@ -173,3 +173,10 @@ func Install(packs ...*Package) (output []byte, err error) {
 	cmd := exec.Command("apt-get", args...)
 	return cmd.CombinedOutput()
 }
+
+// Clean erases downloaded archive files.
+func Clean() (output []byte, err error) {
+	args := []string{"clean"}
+	cmd := exec.Command("apt-get", args...)
+	return cmd.CombinedOutput()
+}
