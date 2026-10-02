@@ -107,7 +107,7 @@ func (r *Repository) APTConfigLine() string {
 
 var aptConfigLineRegexp = regexp.MustCompile(`^(# )?(deb|deb-src)(?: \[(.*)\])? ([^ ]+) ([^ ]+) ([^#\n]+)(?: +# *(.*))?$`)
 
-func parseAPTConfigLine(line string) *Repository {
+func ParseAPTConfigLine(line string) *Repository {
 	match := aptConfigLineRegexp.FindAllStringSubmatch(line, -1)
 	if len(match) == 0 || len(match[0]) < 6 {
 		return nil
@@ -134,7 +134,7 @@ func parseAPTConfigFile(configPath string) (RepositoryList, error) {
 	res := RepositoryList{}
 	for scanner.Scan() {
 		line := scanner.Text()
-		repo := parseAPTConfigLine(line)
+		repo := ParseAPTConfigLine(line)
 		if repo != nil {
 			repo.configFile = configPath
 			res = append(res, repo)
@@ -226,7 +226,7 @@ func RemoveRepository(repo *Repository, configFolderPath string) error {
 	newContent := ""
 	for scanner.Scan() {
 		line := scanner.Text()
-		r := parseAPTConfigLine(line)
+		r := ParseAPTConfigLine(line)
 		if r != nil && r.Equals(repo) {
 			// Filter repo configs that match the repo to be removed
 			continue
@@ -269,7 +269,7 @@ func EditRepository(old *Repository, newRepo *Repository, configFolderPath strin
 	newContent := ""
 	for scanner.Scan() {
 		line := scanner.Text()
-		r := parseAPTConfigLine(line)
+		r := ParseAPTConfigLine(line)
 		if r.Equals(old) {
 			// Write the new config to replace the old one
 			newContent += newRepo.APTConfigLine() + "\n"
